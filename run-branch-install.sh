@@ -5,23 +5,44 @@
 # Exit on error
 set -e
 
-# Check if environment config is provided
+# Check if environment configs are provided
 if [ -z "$DOTFILES_BRANCH" ]; then
   echo "Error: DOTFILES_BRANCH environment variable is not set."
   echo "Usage: DOTFILES_BRANCH=branch_name ./run-branch-install.sh"
   exit 1
 fi
 
+if [ -z "$DOTFILES_REPO" ]; then
+  echo "Error: DOTFILES_REPO environment variable is not set."
+  exit 1
+fi
+
+# Check if remote repository is configured
+echo "Checking remote repository configuration..."
+REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+
+if [ -z "$REMOTE_URL" ]; then
+  echo "Remote 'origin' not found. Setting up remote repository..."
+  echo "Adding remote 'origin' pointing to $DOTFILES_REPO"
+  git remote add origin "$DOTFILES_REPO"
+elif [ "$REMOTE_URL" != "$DOTFILES_REPO" ]; then
+  echo "Remote 'origin' points to unexpected URL: $REMOTE_URL"
+  echo "Updating to expected repository: $DOTFILES_REPO"
+  git remote set-url origin "$DOTFILES_REPO"
+fi
+
+echo "Using GitHub repository: $DOTFILES_REPO"
 echo "Using branch: $DOTFILES_BRANCH"
+
 # First, fetch from remote to update branch information
 echo "Fetching latest branch information..."
-git fetch --unshallow
+git fetch --unshallow || git fetch
 
 # List all available branches
 echo "Available branches:"
-git branch -a
+git branch -r
 
-git checkout "$DOTFILES_BRANCH"
+git checkout "$DOTFILES_BRANCH" || git checkout -b "$DOTFILES_BRANCH" "origin/$DOTFILES_BRANCH"
 
 # Check if the checkout was successful
 if [ $? -ne 0 ]; then
