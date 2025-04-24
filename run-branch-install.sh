@@ -13,6 +13,9 @@ if [ -z "$DOTFILES_BRANCH" ]; then
 fi
 
 echo "Using branch: $DOTFILES_BRANCH"
+# First, fetch from remote to update branch information
+echo "Fetching latest branch information..."
+git fetch --all
 
 git checkout "$DOTFILES_BRANCH"
 
