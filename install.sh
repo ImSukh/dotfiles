@@ -50,9 +50,29 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
 echo "Figuring out which code we are running"
-printenv
-which code
-code -v
+# Get the latest VSCode version and commit hash
+echo "Getting latest VSCode version..."
+LATEST_TAG=$(curl -s https://api.github.com/repos/microsoft/vscode/tags | grep -o '"name": ".*"' | head -1 | sed 's/"name": "\(.*\)"/\1/')
+if [ -z "$LATEST_TAG" ]; then
+  echo "Failed to get latest VSCode tag from GitHub"
+else
+  echo "Latest VSCode tag: $LATEST_TAG"
+
+  # Get the commit hash for this tag
+  GIT_COMMIT=$(curl -s "https://api.github.com/repos/microsoft/vscode/git/refs/tags/$LATEST_TAG" | grep -o '"sha": ".*"' | head -1 | sed 's/"sha": "\(.*\)"/\1/')
+  if [ -z "$GIT_COMMIT" ]; then
+    echo "Failed to get commit hash for tag $LATEST_TAG"
+  else
+    echo "Commit hash: $GIT_COMMIT"
+
+    # Construct the code path for Linux ARM64
+    VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
+    echo "VSCode path for Linux ARM64: $VSCODE_PATH"
+
+    # You can export this path or use it as needed
+    export VSCODE_PATH
+  fi
+fi
 # Instead of changing the default shell, set up Bash to automatically start zsh
 echo "Setting up Bash to automatically start zsh..."
 
