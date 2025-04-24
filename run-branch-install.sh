@@ -6,23 +6,23 @@
 set -e
 
 # Check if environment config is provided
-if [ -z "$DOTFILE_BRANCH" ]; then
-  echo "Error: DOTFILE_BRANCH environment variable is not set."
-  echo "Usage: DOTFILE_BRANCH=branch_name ./run-branch-install.sh"
+if [ -z "$DOTFILES_BRANCH" ]; then
+  echo "Error: DOTFILES_BRANCH environment variable is not set."
+  echo "Usage: DOTFILES_BRANCH=branch_name ./run-branch-install.sh"
   exit 1
 fi
 
-echo "Using branch: $DOTFILE_BRANCH"
+echo "Using branch: $DOTFILES_BRANCH"
 
-git checkout "$DOTFILE_BRANCH"
+git checkout "$DOTFILES_BRANCH"
 
 # Check if the checkout was successful
 if [ $? -ne 0 ]; then
-  echo "Error: Failed to checkout branch $DOTFILE_BRANCH"
+  echo "Error: Failed to checkout branch $DOTFILES_BRANCH"
   exit 1
 fi
 
-echo "Successfully checked out branch: $DOTFILE_BRANCH"
+echo "Successfully checked out branch: $DOTFILES_BRANCH"
 
 if [ ! -f "./install.sh" ]; then
   echo "Error: install.sh script not found after checkout."
