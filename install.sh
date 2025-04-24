@@ -49,11 +49,43 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "Installing powerlevel10k theme..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
-# sudo apt install -y code
-# code --install-extension eamodio.gitlens
 
-# Change the default shell to zsh
-sudo chsh -s "$ZSH_PATH"
+# Instead of changing the default shell, set up Bash to automatically start zsh
+echo "Setting up Bash to automatically start zsh..."
+
+# Find zsh path
+ZSH_PATH=$(which zsh)
+if [ -z "$ZSH_PATH" ]; then
+  echo "Warning: zsh not found in PATH. Please install zsh."
+  exit 1
+fi
+
+# Create a .bashrc file that starts zsh, or append to it if it exists
+BASHRC="$HOME/.bashrc"
+BASH_PROFILE="$HOME/.bash_profile"
+
+# Function to add zsh startup to a file
+add_zsh_startup() {
+  local file="$1"
+  local content="
+# Automatically switch to zsh (added by dotfiles installer)
+if [ -x \"$ZSH_PATH\" ]; then
+  export SHELL=\"$ZSH_PATH\"
+  exec \"$ZSH_PATH\" -l
+fi"
+
+  # Check if the content already exists in the file
+  if [ -f "$file" ] && grep -q "Automatically switch to zsh" "$file"; then
+    echo "Zsh startup already configured in $file"
+  else
+    echo "Adding zsh startup to $file"
+    echo "$content" >> "$file"
+  fi
+}
+
+# Add to both .bashrc and .bash_profile to ensure it works in all environments
+add_zsh_startup "$BASHRC"
+add_zsh_startup "$BASH_PROFILE"
 
 echo "Dotfiles installation complete!"
 echo "Please restart your terminal or run 'source ~/.zshrc' to apply changes."
