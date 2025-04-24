@@ -19,17 +19,9 @@ fi
 
 # Check if remote repository is configured
 echo "Checking remote repository configuration..."
-REMOTE_URL=$(git remote get-url origin 2>/dev/null || echo "")
+git remote get-url origin
+git remote set-url origin "$DOTFILES_REPO"
 
-if [ -z "$REMOTE_URL" ]; then
-  echo "Remote 'origin' not found. Setting up remote repository..."
-  echo "Adding remote 'origin' pointing to $DOTFILES_REPO"
-  git remote add origin "$DOTFILES_REPO"
-elif [ "$REMOTE_URL" != "$DOTFILES_REPO" ]; then
-  echo "Remote 'origin' points to unexpected URL: $REMOTE_URL"
-  echo "Updating to expected repository: $DOTFILES_REPO"
-  git remote set-url origin "$DOTFILES_REPO"
-fi
 
 echo "Using GitHub repository: $DOTFILES_REPO"
 echo "Using branch: $DOTFILES_BRANCH"
