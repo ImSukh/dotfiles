@@ -28,13 +28,13 @@ echo "Using branch: $DOTFILES_BRANCH"
 
 # First, fetch from remote to update branch information
 echo "Fetching latest branch information..."
-git fetch --unshallow || git fetch
+git fetch --unshallow
 
 # List all available branches
 echo "Available branches:"
 git branch -r
 
-git checkout "$DOTFILES_BRANCH" || git checkout -b "$DOTFILES_BRANCH" "origin/$DOTFILES_BRANCH"
+git checkout "$DOTFILES_BRANCH"
 
 # Check if the checkout was successful
 if [ $? -ne 0 ]; then
