@@ -50,28 +50,26 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
 echo "Figuring out which code we are running"
-# Get the latest VSCode version and commit hash
+# Get the latest VSCode version and commit hash using git ls-remote
 echo "Getting latest VSCode version..."
-LATEST_TAG=$(curl -s https://api.github.com/repos/microsoft/vscode/tags | grep -o '"name": ".*"' | head -1 | sed 's/"name": "\(.*\)"/\1/')
-if [ -z "$LATEST_TAG" ]; then
-  echo "Failed to get latest VSCode tag from GitHub"
+
+# Use git ls-remote to get tags and sort them to find the latest stable release
+LATEST_TAG_LINE=$(git ls-remote --tags --refs https://github.com/microsoft/vscode.git | grep -v "\^{}" | sort -V | tail -n 1)
+if [ -z "$LATEST_TAG_LINE" ]; then
+  echo "Failed to get latest VSCode tag"
 else
+  GIT_COMMIT=$(echo "$LATEST_TAG_LINE" | awk '{print $1}')
+  LATEST_TAG=$(echo "$LATEST_TAG_LINE" | awk '{print $2}' | sed 's/refs\/tags\///')
+
   echo "Latest VSCode tag: $LATEST_TAG"
+  echo "Commit hash: $GIT_COMMIT"
 
-  # Get the commit hash for this tag
-  GIT_COMMIT=$(curl -s "https://api.github.com/repos/microsoft/vscode/git/refs/tags/$LATEST_TAG" | grep -o '"sha": ".*"' | head -1 | sed 's/"sha": "\(.*\)"/\1/')
-  if [ -z "$GIT_COMMIT" ]; then
-    echo "Failed to get commit hash for tag $LATEST_TAG"
-  else
-    echo "Commit hash: $GIT_COMMIT"
+  # Construct the code path for Linux ARM64
+  VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
+  echo "VSCode path for Linux ARM64: $VSCODE_PATH"
 
-    # Construct the code path for Linux ARM64
-    VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
-    echo "VSCode path for Linux ARM64: $VSCODE_PATH"
-
-    # You can export this path or use it as needed
-    export VSCODE_PATH
-  fi
+  # You can export this path or use it as needed
+  export VSCODE_PATH
 fi
 # Instead of changing the default shell, set up Bash to automatically start zsh
 echo "Setting up Bash to automatically start zsh..."
