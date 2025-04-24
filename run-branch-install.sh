@@ -29,6 +29,7 @@ echo "Using branch: $DOTFILES_BRANCH"
 # First, fetch from remote to update branch information
 echo "Fetching latest branch information..."
 git fetch --unshallow
+git pull
 
 # List all available branches
 echo "Available branches:"
