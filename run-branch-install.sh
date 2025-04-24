@@ -29,7 +29,7 @@ echo "Using branch: $DOTFILES_BRANCH"
 # First, fetch from remote to update branch information
 echo "Fetching latest branch information..."
 git fetch --unshallow
-git pull
+git branch origin "$DOTFILES_BRANCH":refs/remotes/origin/"$DOTFILES_BRANCH"
 
 # List all available branches
 echo "Available branches:"
