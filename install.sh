@@ -54,7 +54,7 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "Installing powerlevel10k theme..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
-
+sudo apt install -y code
 code --install-extension eamodio.gitlens
 
 # Change the default shell to zsh
