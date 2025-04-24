@@ -50,7 +50,8 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
 echo "Figuring out which code we are running"
-printenv
+which code
+code -v
 # Instead of changing the default shell, set up Bash to automatically start zsh
 echo "Setting up Bash to automatically start zsh..."
 
