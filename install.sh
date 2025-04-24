@@ -24,15 +24,10 @@ rm -f "$HOME/.zshrc"
 rm -f "$HOME/.config/starship.toml"
 rm -rf "$PLUGINS_DIR"
 
-# Backup existing .zshrc if it exists
-if [ -f "$HOME/.zshrc" ]; then
-  echo "Backing up existing .zshrc to .zshrc.backup"
-  mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
-fi
-
 # Create symlinks
 echo "Creating symlinks..."
 ln -sf "$DOTFILES_DIR/.zshrc" "$HOME/.zshrc"
+ln -sf "$DOTFILES_DIR/.p10k.zsh" "$HOME/.p10k.zsh"
 
 # Install custom plugins
 ZSH_CUSTOM=${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}
@@ -54,8 +49,8 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   echo "Installing powerlevel10k theme..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
-sudo apt install -y code
-code --install-extension eamodio.gitlens
+# sudo apt install -y code
+# code --install-extension eamodio.gitlens
 
 # Change the default shell to zsh
 sudo chsh -s "$ZSH_PATH"
