@@ -35,7 +35,7 @@ git fetch origin "$DOTFILES_BRANCH":refs/remotes/origin/"$DOTFILES_BRANCH"
 echo "Available branches:"
 git branch -r
 
-git checkout "$DOTFILES_BRANCH"
+git checkout -b "$DOTFILES_BRANCH" origin/"$DOTFILES_BRANCH"
 
 # Check if the checkout was successful
 if [ $? -ne 0 ]; then
