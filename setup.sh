@@ -61,17 +61,17 @@ for vscode_server_dir in /home/vscode/.vscode-server/bin/*/bin; do
 done
 
 # Install VSCode extensions using the determined code path
-if [ -n "$VSCODE_PATH" ]; then
+if [ -n "$VSCODE_SERVER_PATH" ]; then
   echo "Installing VSCode extensions..."
 
   # Make sure the code path is executable
-  if [ -x "$VSCODE_PATH" ]; then
+  if [ -x "$VSCODE_SERVER_PATH" ]; then
     # Install extensions
-    "$VSCODE_PATH" --install-extension eamodio.gitlens
+    "$VSCODE_SERVER_PATH" --install-extension eamodio.gitlens
 
     echo "VSCode extensions installed successfully"
   else
-    echo "Warning: VSCode path exists but is not executable: $VSCODE_PATH"
+    echo "Warning: VSCode path exists but is not executable: $VSCODE_SERVER_PATH"
   fi
 else
   echo "Skipping VSCode extension installation as VSCode path could not be determined"
