@@ -8,22 +8,10 @@ set -e
 # Check if environment configs are provided
 if [ -z "$DOTFILES_BRANCH" ]; then
   echo "Error: DOTFILES_BRANCH environment variable is not set."
-  echo "Usage: DOTFILES_BRANCH=branch_name ./run-branch-install.sh"
+  echo "Usage: DOTFILES_BRANCH=branch_name ./install.sh"
   exit 1
 fi
 
-if [ -z "$DOTFILES_REPO" ]; then
-  echo "Error: DOTFILES_REPO environment variable is not set."
-  exit 1
-fi
-
-# Check if remote repository is configured
-echo "Checking remote repository configuration..."
-git remote get-url origin
-git remote set-url origin "$DOTFILES_REPO"
-
-
-echo "Using GitHub repository: $DOTFILES_REPO"
 echo "Using branch: $DOTFILES_BRANCH"
 
 # First, fetch from remote to update branch information
@@ -47,16 +35,16 @@ fi
 
 echo "Successfully checked out branch: $DOTFILES_BRANCH"
 
-if [ ! -f "./install.sh" ]; then
-  echo "Error: install.sh script not found after checkout."
+if [ ! -f "./setup.sh" ]; then
+  echo "Error: setup.sh script not found after checkout."
   exit 1
 fi
 
-# Make install.sh executable if it isn't already
-chmod +x ./install.sh
+# Make setup.sh executable if it isn't already
+chmod +x ./setup.sh
 
-echo "Running install.sh script..."
-# Execute the install script from the branch
-./install.sh
+echo "Running setup.sh script..."
+# Execute the setup script from the branch
+./setup.sh
 
 echo "Installation complete!"
