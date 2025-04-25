@@ -50,34 +50,15 @@ if [ ! -d "$ZSH_CUSTOM/themes/powerlevel10k" ]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 fi
 echo "Figuring out which code we are running"
-# Get the latest VSCode version and commit hash using git ls-remote
-echo "Getting latest VSCode version..."
 
-# Use git ls-remote to get tags and sort them to find the latest stable release
-# First get the latest tag name from GitHub API
-LATEST_TAG=$(curl -s https://api.github.com/repos/microsoft/vscode/releases/latest | grep -o '"tag_name": "[^"]*' | sed 's/"tag_name": "//')
-
-if [ -z "$LATEST_TAG" ]; then
-  echo "Failed to get latest VSCode tag from GitHub API"
-else
-  echo "Latest VSCode tag: $LATEST_TAG"
-
-  # Now get the commit SHA for this specific tag using git ls-remote
-  GIT_COMMIT=$(git ls-remote https://github.com/microsoft/vscode.git "refs/tags/$LATEST_TAG" | awk '{print $1}')
-
-  if [ -z "$GIT_COMMIT" ]; then
-    echo "Failed to get commit hash for tag $LATEST_TAG"
-  else
-    echo "Commit hash: $GIT_COMMIT"
-
-    # Construct the code path for Linux ARM64
-    VSCODE_PATH="/home/vscode/.vscode-server/bin/$GIT_COMMIT/bin/code-server"
-    echo "VSCode path for Linux ARM64: $VSCODE_PATH"
-
-    # You can export this path or use it as needed
-    export VSCODE_PATH
+# Look for VS Code server CLI in common locations
+for vscode_server_dir in /home/vscode/.vscode-server/bin/*/bin/; do
+  if [ -d "$vscode_server_dir" ] && [ -x "$vscode_server_dir/code-server" ]; then
+    VSCODE_SERVER_PATH="$vscode_server_dir/code-server"
+    export VSCODE_SERVER_PATH
+    echo "Found VSCode server at: $VSCODE_SERVER_PATH"
   fi
-fi
+done
 
 # Install VSCode extensions using the determined code path
 if [ -n "$VSCODE_PATH" ]; then
@@ -95,7 +76,6 @@ if [ -n "$VSCODE_PATH" ]; then
 else
   echo "Skipping VSCode extension installation as VSCode path could not be determined"
 fi
-
 
 # Instead of changing the default shell, set up Bash to automatically start zsh
 echo "Setting up Bash to automatically start zsh..."
@@ -135,4 +115,3 @@ add_zsh_startup "$BASHRC"
 add_zsh_startup "$BASH_PROFILE"
 
 echo "Dotfiles installation complete!"
-echo "Please restart your terminal or run 'source ~/.zshrc' to apply changes."
