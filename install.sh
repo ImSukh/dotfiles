@@ -79,6 +79,10 @@ else
   fi
 fi
 
+export TERM_PROGRAM="vscode"
+export VSCODE_IPC_HOOK_CLI="/tmp/vscode-ipc-hook-cli-$$"
+export VSCODE_GIT_ASKPASS_NODE="$VSCODE_PATH"  # Not exactly right but might help
+
 # Install VSCode extensions using the determined code path
 if [ -n "$VSCODE_PATH" ]; then
   echo "Installing VSCode extensions..."
