@@ -54,23 +54,49 @@ echo "Figuring out which code we are running"
 echo "Getting latest VSCode version..."
 
 # Use git ls-remote to get tags and sort them to find the latest stable release
-LATEST_TAG_LINE=$(git ls-remote --tags --refs https://github.com/microsoft/vscode.git | grep -v "\^{}" | sort -V | tail -n 1)
-if [ -z "$LATEST_TAG_LINE" ]; then
-  echo "Failed to get latest VSCode tag"
+# First get the latest tag name from GitHub API
+LATEST_TAG=$(curl -s https://api.github.com/repos/microsoft/vscode/releases/latest | grep -o '"tag_name": "[^"]*' | sed 's/"tag_name": "//')
+
+if [ -z "$LATEST_TAG" ]; then
+  echo "Failed to get latest VSCode tag from GitHub API"
 else
-  GIT_COMMIT=$(echo "$LATEST_TAG_LINE" | awk '{print $1}')
-  LATEST_TAG=$(echo "$LATEST_TAG_LINE" | awk '{print $2}' | sed 's/refs\/tags\///')
-
   echo "Latest VSCode tag: $LATEST_TAG"
-  echo "Commit hash: $GIT_COMMIT"
 
-  # Construct the code path for Linux ARM64
-  VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
-  echo "VSCode path for Linux ARM64: $VSCODE_PATH"
+  # Now get the commit SHA for this specific tag using git ls-remote
+  GIT_COMMIT=$(git ls-remote https://github.com/microsoft/vscode.git "refs/tags/$LATEST_TAG" | awk '{print $1}')
 
-  # You can export this path or use it as needed
-  export VSCODE_PATH
+  if [ -z "$GIT_COMMIT" ]; then
+    echo "Failed to get commit hash for tag $LATEST_TAG"
+  else
+    echo "Commit hash: $GIT_COMMIT"
+
+    # Construct the code path for Linux ARM64
+    VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
+    echo "VSCode path for Linux ARM64: $VSCODE_PATH"
+
+    # You can export this path or use it as needed
+    export VSCODE_PATH
+  fi
 fi
+
+# Install VSCode extensions using the determined code path
+if [ -n "$VSCODE_PATH" ]; then
+  echo "Installing VSCode extensions..."
+
+  # Make sure the code path is executable
+  if [ -x "$VSCODE_PATH" ]; then
+    # Install extensions
+    "$VSCODE_PATH" --install-extension eamodio.gitlens
+
+    echo "VSCode extensions installed successfully"
+  else
+    echo "Warning: VSCode path exists but is not executable: $VSCODE_PATH"
+  fi
+else
+  echo "Skipping VSCode extension installation as VSCode path could not be determined"
+fi
+
+
 # Instead of changing the default shell, set up Bash to automatically start zsh
 echo "Setting up Bash to automatically start zsh..."
 
