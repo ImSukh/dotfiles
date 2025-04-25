@@ -18,7 +18,7 @@ echo "Using branch: $DOTFILES_BRANCH"
 echo "Fetching latest branch information..."
 git fetch --unshallow
 # Restore the run-branch-install.sh script to discard any local changes
-git restore run-branch-install.sh
+git restore install.sh
 git fetch origin "$DOTFILES_BRANCH":refs/remotes/origin/"$DOTFILES_BRANCH"
 
 # List all available branches
