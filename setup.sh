@@ -52,7 +52,7 @@ fi
 echo "Figuring out which code we are running"
 
 # Look for VS Code server CLI in common locations
-for vscode_server_dir in /home/vscode/.vscode-server/bin/*/bin/; do
+for vscode_server_dir in /home/vscode/.vscode-server/bin/*/bin; do
   if [ -d "$vscode_server_dir" ] && [ -x "$vscode_server_dir/code-server" ]; then
     VSCODE_SERVER_PATH="$vscode_server_dir/code-server"
     export VSCODE_SERVER_PATH
