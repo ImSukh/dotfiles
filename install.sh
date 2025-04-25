@@ -71,17 +71,13 @@ else
     echo "Commit hash: $GIT_COMMIT"
 
     # Construct the code path for Linux ARM64
-    VSCODE_PATH="/vscode/vscode-server/bin/linux-arm64/$GIT_COMMIT/bin/remote-cli/code"
+    VSCODE_PATH="/home/vscode/.vscode-server/bin/$GIT_COMMIT/bin/code-server"
     echo "VSCode path for Linux ARM64: $VSCODE_PATH"
 
     # You can export this path or use it as needed
     export VSCODE_PATH
   fi
 fi
-
-export TERM_PROGRAM="vscode"
-export VSCODE_IPC_HOOK_CLI="/tmp/vscode-ipc-hook-cli-$$"
-export VSCODE_GIT_ASKPASS_NODE="$VSCODE_PATH"  # Not exactly right but might help
 
 # Install VSCode extensions using the determined code path
 if [ -n "$VSCODE_PATH" ]; then
